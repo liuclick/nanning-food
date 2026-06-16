@@ -22,6 +22,23 @@
             --green: #27ae60;
             --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.15);
+            --nav-bg: rgba(255, 255, 255, 0.95);
+            --hero-bg: linear-gradient(135deg, #fdf6ec 0%, #f5e6d3 50%, #e8d5c4 100%);
+        }
+
+        body.dark {
+            --primary: #ff6b6b;
+            --primary-dark: #e55a5a;
+            --gold: #f7b731;
+            --bg: #1a1a2e;
+            --card-bg: #16213e;
+            --text: #e4e4e4;
+            --text-light: #a0a0b0;
+            --green: #2ecc71;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.5);
+            --nav-bg: rgba(22, 33, 62, 0.95);
+            --hero-bg: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
         }
 
         body {
@@ -39,7 +56,7 @@
             left: 0;
             right: 0;
             z-index: 1000;
-            background: rgba(255, 255, 255, 0.95);
+            background: var(--nav-bg);
             backdrop-filter: blur(10px);
             box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
             transition: all 0.3s ease;
@@ -123,6 +140,19 @@
             transition: all 0.3s;
         }
 
+        .mode-toggle {
+            background: none;
+            border: 2px solid var(--text-light);
+            font-size: 1.2rem;
+            padding: 6px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            line-height: 1;
+            margin-left: 10px;
+        }
+        .mode-toggle:hover { border-color: var(--primary); transform: scale(1.05); }
+
         /* 主视觉区 */
         .hero {
             min-height: 100vh;
@@ -130,7 +160,7 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            background: linear-gradient(135deg, #fdf6ec 0%, #fce4c8 30%, #fdebd0 60%, #e8f8f5 100%);
+            background: var(--hero-bg);
             position: relative;
             overflow: hidden;
             padding: 100px 20px 60px;
@@ -201,6 +231,110 @@
             color: var(--text-light);
             margin-bottom: 30px;
             animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        /* 随机推荐按钮 */
+        .random-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, var(--primary), #e67e22);
+            border: none;
+            border-radius: 35px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(231, 76, 60, 0.35);
+            transition: all 0.3s;
+            animation: fadeInUp 0.8s ease 0.35s both;
+            font-family: inherit;
+        }
+
+        .random-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 28px rgba(231, 76, 60, 0.5);
+        }
+
+        .random-btn:active {
+            transform: scale(0.95);
+        }
+
+        .random-btn .dice {
+            display: inline-block;
+            font-size: 1.4rem;
+            animation: diceIdle 0.6s ease-in-out infinite;
+        }
+
+        .random-btn.rolling .dice {
+            animation: diceRoll 0.4s ease-in-out infinite;
+        }
+
+        @keyframes diceIdle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            75% { transform: rotate(-10deg); }
+        }
+
+        @keyframes diceRoll {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.3); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        /* 随机结果卡片 */
+        .random-result {
+            display: none;
+            margin-top: 20px;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .random-result.show {
+            display: block;
+        }
+
+        .random-result-card {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            background: #fff;
+            padding: 16px 28px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .random-result-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+        }
+
+        .random-result-emoji {
+            font-size: 3rem;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.1s both;
+        }
+
+        .random-result-info {
+            text-align: left;
+        }
+
+        .random-result-info .name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .random-result-info .hint {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 3px;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         .hero-stats {
@@ -491,6 +625,83 @@
             color: var(--gold);
             font-size: 0.9rem;
         }
+
+        /* 美食卡片操作按钮 */
+        .food-card-actions {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 6px;
+            z-index: 5;
+        }
+
+        .action-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: none;
+            font-size: 1.05rem;
+            cursor: pointer;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(4px);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .action-btn:hover { transform: scale(1.15); }
+
+        .action-btn.fav-btn { color: #ccc; }
+        .action-btn.fav-btn.active { color: #e74c3c; background: #ffe0e0; }
+
+        .action-btn.eat-btn { color: #ccc; }
+        .action-btn.eat-btn.active { color: #27ae60; background: #e0ffe0; }
+
+        /* 进度条与统计 */
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px 20px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 100px;
+        }
+
+        .stat-item:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+        .stat-item.active { border: 2px solid var(--primary); }
+
+        .stat-item .stat-num { font-size: 1.4rem; font-weight: 700; color: var(--primary); }
+        .stat-item .stat-label { font-size: 0.78rem; color: var(--text-light); margin-top: 2px; }
+
+        /* 深色模式卡片适配 */
+        body.dark .food-card-body { background: var(--card-bg); }
+        body.dark .food-card-footer { border-color: rgba(255,255,255,0.1); }
+        body.dark .features { background: var(--bg); }
+        body.dark .search-input { background: var(--card-bg); color: var(--text); border-color: rgba(255,255,255,0.15); }
+        body.dark .category-tab { color: var(--text); }
+        body.dark .category-tab.active { background: var(--primary); color: #fff; }
+        body.dark .food-card { box-shadow: var(--shadow); }
+        body.dark .food-card:hover { box-shadow: var(--shadow-hover); }
+        body.dark .feature-card { background: var(--card-bg); box-shadow: var(--shadow); }
+        body.dark .route-card { background: var(--card-bg); }
+        body.dark .section-title h2 { color: var(--text); }
+        body.dark .section-title p { color: var(--text-light); }
+        body.dark .modal-content { background: var(--card-bg); }
+        body.dark .modal-overlay { background: rgba(0,0,0,0.8); }
+        body.dark .hero-badge { background: rgba(0,0,0,0.3); }
 
         /* 特色区域 */
         .features {
@@ -888,6 +1099,7 @@
             <div class="menu-toggle" id="menuToggle">
                 <span></span><span></span><span></span>
             </div>
+            <button class="mode-toggle" id="modeToggle" title="切换深色模式">🌙</button>
         </div>
     </nav>
 
@@ -911,6 +1123,10 @@
                     <div class="label">美食分类</div>
                 </div>
             </div>
+            <button class="random-btn" id="randomBtn" onclick="randomPick()">
+                <span class="dice">🎲</span> 今天吃什么？
+            </button>
+            <div class="random-result" id="randomResult"></div>
         </div>
         <div class="scroll-indicator">↓</div>
     </section>
@@ -930,6 +1146,22 @@
                 <div class="search-input-wrapper">
                     <input type="text" class="search-input" id="searchInput" placeholder="搜索美食名称...">
                     <span class="search-icon">🔍</span>
+                </div>
+            </div>
+
+            <!-- 打卡统计 -->
+            <div class="stats-bar">
+                <div class="stat-item" id="statFav" onclick="filterFavorites()">
+                    <div class="stat-num" id="favCount">0</div>
+                    <div class="stat-label">❤️ 我的收藏</div>
+                </div>
+                <div class="stat-item" id="statEaten" onclick="filterEaten()">
+                    <div class="stat-num" id="eatenCount">0/12</div>
+                    <div class="stat-label">✅ 已打卡</div>
+                </div>
+                <div class="stat-item" id="statAll" onclick="showAllFoods()">
+                    <div class="stat-num">12</div>
+                    <div class="stat-label">🍽️ 全部美食</div>
                 </div>
             </div>
 
@@ -1265,29 +1497,183 @@
 
             const spiceLabels = ['不辣', '微辣', '中辣', '较辣', '特辣'];
 
+            // 读取 localStorage
+            const favorites = JSON.parse(localStorage.getItem('nnFavorites') || '[]');
+            const eatenList = JSON.parse(localStorage.getItem('nnEaten') || '[]');
+
             grid.innerHTML = filtered.map(food => `
-                <div class="food-card" onclick="openDetail(${food.id})" data-category="${food.category}">
-                    <div class="food-card-image" style="--card-from: ${food.bgColor}; --card-to: ${food.bgColorDark || food.bgColor};">
-                        <div class="food-dots"></div>
-                        <span class="food-emoji">${food.emoji}</span>
-                        <span class="food-card-tag">${food.tag}</span>
-                        <span class="food-name-overlay">${food.name}</span>
+                <div class="food-card" data-category="${food.category}" style="position:relative;">
+                    <div class="food-card-actions">
+                        <button class="action-btn fav-btn ${favorites.includes(food.id)?'active':''}" 
+                            onclick="event.stopPropagation();toggleFav(${food.id})" title="收藏">❤️</button>
+                        <button class="action-btn eat-btn ${eatenList.includes(food.id)?'active':''}" 
+                            onclick="event.stopPropagation();toggleEat(${food.id})" title="打卡">✅</button>
                     </div>
-                    <div class="food-card-body">
-                        <h3>${food.name}</h3>
-                        <div class="food-card-meta">
-                            <span>🌶️ ${spiceLabels[food.spiceLevel]}</span>
-                            <span>💰 ${food.priceRange}</span>
+                    <div onclick="openDetail(${food.id})">
+                        <div class="food-card-image" style="--card-from: ${food.bgColor}; --card-to: ${food.bgColorDark || food.bgColor};">
+                            <div class="food-dots"></div>
+                            <span class="food-emoji">${food.emoji}</span>
+                            <span class="food-card-tag">${food.tag}</span>
+                            <span class="food-name-overlay">${food.name}</span>
                         </div>
-                        <p class="desc">${food.desc}</p>
-                    </div>
-                    <div class="food-card-footer">
-                        <span class="food-card-location">📍 ${food.location}</span>
-                        <span class="food-card-rating">${food.rating}</span>
+                        <div class="food-card-body">
+                            <h3>${food.name}</h3>
+                            <div class="food-card-meta">
+                                <span>🌶️ ${spiceLabels[food.spiceLevel]}</span>
+                                <span>💰 ${food.priceRange}</span>
+                            </div>
+                            <p class="desc">${food.desc}</p>
+                        </div>
+                        <div class="food-card-footer">
+                            <span class="food-card-location">📍 ${food.location}</span>
+                            <span class="food-card-rating">${food.rating}</span>
+                        </div>
                     </div>
                 </div>
             `).join('');
+
+            // 更新统计
+            updateStats();
+            // 更新分类标签状态
+            updateCategoryTabs(filterCategory);
         }
+
+        // 更新统计栏
+        function updateStats() {
+            const favorites = JSON.parse(localStorage.getItem('nnFavorites') || '[]');
+            const eatenList = JSON.parse(localStorage.getItem('nnEaten') || '[]');
+            document.getElementById('favCount').textContent = favorites.length;
+            document.getElementById('eatenCount').textContent = eatenList.length + '/12';
+        }
+
+        // 更新分类标签高亮
+        function updateCategoryTabs(cat) {
+            document.querySelectorAll('#categoryTabs .category-tab').forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.category === cat);
+            });
+            document.getElementById('statAll').classList.toggle('active', cat === 'all');
+        }
+
+        // 收藏切换
+        function toggleFav(id) {
+            let favorites = JSON.parse(localStorage.getItem('nnFavorites') || '[]');
+            const idx = favorites.indexOf(id);
+            if (idx === -1) favorites.push(id);
+            else favorites.splice(idx, 1);
+            localStorage.setItem('nnFavorites', JSON.stringify(favorites));
+            renderFoods(currentCategory, currentSearch);
+        }
+
+        // 打卡切换
+        function toggleEat(id) {
+            let eatenList = JSON.parse(localStorage.getItem('nnEaten') || '[]');
+            const idx = eatenList.indexOf(id);
+            if (idx === -1) eatenList.push(id);
+            else eatenList.splice(idx, 1);
+            localStorage.setItem('nnEaten', JSON.stringify(eatenList));
+            renderFoods(currentCategory, currentSearch);
+        }
+
+        // 筛选收藏
+        function filterFavorites() {
+            const favorites = JSON.parse(localStorage.getItem('nnFavorites') || '[]');
+            const grid = document.getElementById('foodGrid');
+            if (favorites.length === 0) {
+                grid.innerHTML = '<div class="no-result">😔 还没有收藏任何美食哦~ 点击卡片上的 ❤️ 收藏吧！</div>';
+                document.getElementById('countFood').textContent = '0';
+                return;
+            }
+            currentCategory = 'all';
+            document.getElementById('searchInput').value = '';
+            currentSearch = '';
+            document.getElementById('statAll').classList.remove('active');
+            document.getElementById('statFav').classList.add('active');
+            document.getElementById('statEaten').classList.remove('active');
+            updateCategoryTabs('all');
+
+            const spiceLabels = ['不辣', '微辣', '中辣', '较辣', '特辣'];
+            const favFoods = foods.filter(f => favorites.includes(f.id));
+            grid.innerHTML = favFoods.map(food => `
+                <div class="food-card" data-category="${food.category}" style="position:relative;">
+                    <div class="food-card-actions">
+                        <button class="action-btn fav-btn active" 
+                            onclick="event.stopPropagation();toggleFav(${food.id})" title="取消收藏">❤️</button>
+                    </div>
+                    <div onclick="openDetail(${food.id})">
+                        <div class="food-card-image" style="--card-from: ${food.bgColor}; --card-to: ${food.bgColorDark || food.bgColor};">
+                            <div class="food-dots"></div>
+                            <span class="food-emoji">${food.emoji}</span>
+                            <span class="food-card-tag">${food.tag}</span>
+                            <span class="food-name-overlay">${food.name}</span>
+                        </div>
+                        <div class="food-card-body">
+                            <h3>${food.name}</h3>
+                            <p class="desc">${food.desc}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('countFood').textContent = favFoods.length + '+';
+            updateStats();
+        }
+
+        // 筛选已打卡
+        function filterEaten() {
+            const eatenList = JSON.parse(localStorage.getItem('nnEaten') || '[]');
+            const grid = document.getElementById('foodGrid');
+            if (eatenList.length === 0) {
+                grid.innerHTML = '<div class="no-result">😔 还没有打卡记录~ 点击卡片上的 ✅ 标记已吃过的美食吧！</div>';
+                document.getElementById('countFood').textContent = '0';
+                return;
+            }
+            currentCategory = 'all';
+            document.getElementById('searchInput').value = '';
+            currentSearch = '';
+            document.getElementById('statAll').classList.remove('active');
+            document.getElementById('statFav').classList.remove('active');
+            document.getElementById('statEaten').classList.add('active');
+            updateCategoryTabs('all');
+
+            const spiceLabels = ['不辣', '微辣', '中辣', '较辣', '特辣'];
+            const eatenFoods = foods.filter(f => eatenList.includes(f.id));
+            grid.innerHTML = eatenFoods.map(food => `
+                <div class="food-card" data-category="${food.category}" style="position:relative;">
+                    <div class="food-card-actions">
+                        <button class="action-btn eat-btn active" 
+                            onclick="event.stopPropagation();toggleEat(${food.id})" title="取消打卡">✅</button>
+                    </div>
+                    <div onclick="openDetail(${food.id})">
+                        <div class="food-card-image" style="--card-from: ${food.bgColor}; --card-to: ${food.bgColorDark || food.bgColor};">
+                            <div class="food-dots"></div>
+                            <span class="food-emoji">${food.emoji}</span>
+                            <span class="food-card-tag">${food.tag}</span>
+                            <span class="food-name-overlay">${food.name}</span>
+                        </div>
+                        <div class="food-card-body">
+                            <h3>${food.name}</h3>
+                            <p class="desc">${food.desc}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('countFood').textContent = eatenFoods.length + '+';
+            updateStats();
+        }
+
+        // 显示全部
+        function showAllFoods() {
+            currentCategory = 'all';
+            document.getElementById('searchInput').value = '';
+            currentSearch = '';
+            document.getElementById('statAll').classList.add('active');
+            document.getElementById('statFav').classList.remove('active');
+            document.getElementById('statEaten').classList.remove('active');
+            renderFoods('all', '');
+        }
+
+        // 当前状态
+        let currentCategory = 'all';
+        let currentSearch = '';
 
         // 渲染路线
         function renderRoutes() {
@@ -1346,10 +1732,13 @@
         // 分类切换
         document.getElementById('categoryTabs').addEventListener('click', function(e) {
             if (e.target.classList.contains('category-tab')) {
-                document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
-                e.target.classList.add('active');
                 const category = e.target.dataset.category;
                 const searchQuery = document.getElementById('searchInput').value;
+                currentCategory = category;
+                currentSearch = searchQuery;
+                document.getElementById('statAll').classList.remove('active');
+                document.getElementById('statFav').classList.remove('active');
+                document.getElementById('statEaten').classList.remove('active');
                 renderFoods(category, searchQuery);
             }
         });
@@ -1358,6 +1747,11 @@
         document.getElementById('searchInput').addEventListener('input', function() {
             const activeTab = document.querySelector('.category-tab.active');
             const category = activeTab ? activeTab.dataset.category : 'all';
+            currentCategory = category;
+            currentSearch = this.value;
+            document.getElementById('statAll').classList.remove('active');
+            document.getElementById('statFav').classList.remove('active');
+            document.getElementById('statEaten').classList.remove('active');
             renderFoods(category, this.value);
         });
 
@@ -1404,6 +1798,59 @@
                     document.getElementById('navLinks').classList.remove('active');
                 }
             });
+        });
+
+        // 随机推荐
+        let isRolling = false;
+
+        function randomPick() {
+            if (isRolling) return;
+            isRolling = true;
+
+            const btn = document.getElementById('randomBtn');
+            const resultDiv = document.getElementById('randomResult');
+            const dice = btn.querySelector('.dice');
+
+            resultDiv.classList.remove('show');
+            btn.classList.add('rolling');
+
+            let count = 0;
+            const maxCount = 12;
+            const interval = setInterval(() => {
+                const randomFood = foods[Math.floor(Math.random() * foods.length)];
+                resultDiv.innerHTML = `
+                    <div class="random-result-card">
+                        <span class="random-result-emoji">${randomFood.emoji}</span>
+                        <div class="random-result-info">
+                            <div class="name">${randomFood.name}</div>
+                            <div class="hint">${randomFood.tag} · ${randomFood.priceRange}</div>
+                        </div>
+                    </div>
+                `;
+                resultDiv.classList.add('show');
+                count++;
+                if (count >= maxCount) {
+                    clearInterval(interval);
+                    btn.classList.remove('rolling');
+                    isRolling = false;
+
+                    const card = resultDiv.querySelector('.random-result-card');
+                    card.onclick = () => openDetail(randomFood.id);
+                    card.style.cursor = 'pointer';
+                }
+            }, 80);
+        }
+
+        // 深色模式切换
+        const modeToggle = document.getElementById('modeToggle');
+        if (localStorage.getItem('nnDarkMode') === 'true') {
+            document.body.classList.add('dark');
+            modeToggle.textContent = '☀️';
+        }
+        modeToggle.addEventListener('click', function() {
+            const isDark = document.body.classList.toggle('dark');
+            modeToggle.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('nnDarkMode', isDark);
         });
 
         // 初始化
