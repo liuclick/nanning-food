@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>南宁美食推荐 | 舌尖上的绿城</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #e74c3c;
+            --primary-dark: #c0392b;
+            --gold: #f39c12;
+            --bg: #fdf6ec;
+            --card-bg: #ffffff;
+            --text: #2c3e50;
+            --text-light: #7f8c8d;
+            --green: #27ae60;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* 顶部导航 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .navbar.scrolled {
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 65px;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .nav-logo .icon {
+            font-size: 1.8rem;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background: var(--text);
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+
+        /* 主视觉区 */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, #fdf6ec 0%, #fce4c8 30%, #fdebd0 60%, #e8f8f5 100%);
+            position: relative;
+            overflow: hidden;
+            padding: 100px 20px 60px;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(231, 76, 60, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 70% 30%, rgba(243, 156, 18, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 50% 70%, rgba(39, 174, 96, 0.04) 0%, transparent 50%);
+            animation: bgFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes bgFloat {
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+            33% {
+                transform: translate(1%, -1%);
+            }
+            66% {
+                transform: translate(-1%, 1%);
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 800px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: var(--primary);
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 16px;
+            animation: fadeInUp 0.8s ease 0.1s both;
+            line-height: 1.2;
+        }
+
+        .hero h1 .highlight {
+            background: linear-gradient(135deg, var(--primary), #e67e22);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 30px;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 40px;
+            animation: fadeInUp 0.8s ease 0.3s both;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat .number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .hero-stat .label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 4px;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            font-size: 1.5rem;
+            color: var(--primary);
+            opacity: 0.6;
+        }
+
+        @keyframes bounce {
+            0%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            50% {
+                transform: translateX(-50%) translateY(10px);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        section {
+            padding: 80px 0;
+        }
+
+        /* 板块标题 */
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title .icon-title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .section-title h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .section-title .divider {
+            width: 60px;
+            height: 3px;
+            background: var(--primary);
+            margin: 0 auto 15px;
+            border-radius: 2px;
+        }
+
+        .section-title p {
+            color: var(--text-light);
+            font-size: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 分类标签 */
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .category-tab {
+            padding: 10px 22px;
+            border-radius: 25px;
+            border: 2px solid #e0d6c8;
+            background: #fff;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .category-tab:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .category-tab.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        /* 美食卡片 */
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 25px;
+        }
+
+        .food-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .food-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .food-card-image {
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--card-from, #f5f0e8) 0%, var(--card-to, #e8d5c4) 100%);
+        }
+
+        .food-card-image::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            pointer-events: none;
+        }
+
+        .food-card-image::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: -20px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            pointer-events: none;
+        }
+
+        .food-card-image .food-emoji {
+            position: relative;
+            z-index: 2;
+            font-size: 5rem;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.15));
+        }
+
+        .food-card:hover .food-emoji {
+            transform: scale(1.15) rotate(-5deg);
+        }
+
+        .food-card-image .food-dots {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            opacity: 0.08;
+            background-image: radial-gradient(circle, #000 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+        }
+
+        .food-card-image .food-name-overlay {
+            position: absolute;
+            bottom: 14px;
+            left: 18px;
+            z-index: 3;
+            color: rgba(0,0,0,0.45);
+            font-size: 0.85rem;
+            font-weight: 600;
+            pointer-events: none;
+            letter-spacing: 1px;
+        }
+
+        .food-card-tag {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--primary);
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            z-index: 3;
+        }
+
+        .food-card-body {
+            padding: 20px;
+        }
+
+        .food-card-body h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .food-card-meta {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .food-card-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .food-card-body .desc {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .food-card-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #f0ebe0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .food-card-location {
+            font-size: 0.85rem;
+            color: var(--green);
+            font-weight: 500;
+        }
+
+        .food-card-rating {
+            color: var(--gold);
+            font-size: 0.9rem;
+        }
+
+        /* 特色区域 */
+        .features {
+            background: #fff;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 30px 20px;
+            border-radius: 16px;
+            background: var(--bg);
+            transition: all 0.3s;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .feature-item h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .feature-item p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* 推荐路线 */
+        .route-section {
+            background: linear-gradient(135deg, #fff5ee 0%, #fdf6ec 50%, #fff 100%);
+        }
+
+        .route-cards {
+            display: grid;
+            gap: 20px;
+        }
+
+        .route-card {
+            display: flex;
+            gap: 20px;
+            background: #fff;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+            align-items: center;
+        }
+
+        .route-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateX(5px);
+        }
+
+        .route-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            opacity: 0.3;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .route-info h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .route-info .route-duration {
+            font-size: 0.85rem;
+            color: var(--green);
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .route-info p {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* 弹窗 */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: #fff;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 35px;
+            position: relative;
+            transform: translateY(30px);
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            border: none;
+            background: #f5f5f5;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .modal-emoji {
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .modal-hero-image {
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .modal h2 {
+            font-size: 1.6rem;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .modal .modal-tags {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .modal .modal-tag {
+            padding: 4px 14px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .modal .modal-tag.category {
+            background: #fce4c8;
+            color: #e67e22;
+        }
+
+        .modal .modal-tag.level {
+            background: #ffe0e0;
+            color: #e74c3c;
+        }
+
+        .modal .modal-tag.price {
+            background: #d5f5e3;
+            color: #27ae60;
+        }
+
+        .modal .modal-desc {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .modal .modal-info {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .modal .modal-info h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .modal .modal-info ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .modal .modal-info li {
+            padding: 5px 0;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        .modal .modal-info li::before {
+            content: '📍 ';
+        }
+
+        /* 页脚 */
+        .footer {
+            background: #2c3e50;
+            color: #bdc3c7;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .footer p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+
+        .footer .heart {
+            color: var(--primary);
+        }
+
+        /* 搜索框 */
+        .search-box {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 45px 14px 20px;
+            border-radius: 30px;
+            border: 2px solid #e0d6c8;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+            background: #fff;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            color: var(--text-light);
+            pointer-events: none;
+        }
+
+        .no-result {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+            font-size: 1.1rem;
+            grid-column: 1 / -1;
+        }
+
+        /* 回到顶部 */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 999;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            .hero-stats {
+                gap: 20px;
+            }
+            .hero-stat .number {
+                font-size: 1.5rem;
+            }
+            .food-card-image {
+                height: 180px;
+            }
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 65px;
+                left: 0;
+                right: 0;
+                background: #fff;
+                flex-direction: column;
+                padding: 20px;
+                gap: 15px;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            }
+            .nav-links.active {
+                display: flex;
+            }
+            .menu-toggle {
+                display: flex;
+            }
+            section {
+                padding: 50px 0;
+            }
+            .food-grid {
+                grid-template-columns: 1fr;
+            }
+            .route-card {
+                flex-direction: column;
+                text-align: center;
+            }
+            .route-number {
+                min-width: auto;
+            }
+            .section-title h2 {
+                font-size: 1.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <a href="#" class="nav-logo">
+                <span class="icon">🍜</span> 寻味南宁
+            </a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#home">首页</a></li>
+                <li><a href="#foods">特色美食</a></li>
+                <li><a href="#routes">美食路线</a></li>
+                <li><a href="#features">美食文化</a></li>
+            </ul>
+            <div class="menu-toggle" id="menuToggle">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主视觉区 -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <div class="hero-badge">🍴 舌尖上的绿城</div>
+            <h1>探索<span class="highlight">南宁</span>地道美食</h1>
+            <p class="hero-subtitle">从街头小吃到老字号名店，带你领略最正宗的南宁味道</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="number" id="countFood">12+</div>
+                    <div class="label">精选美食</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="number">3</div>
+                    <div class="label">推荐路线</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="number">5</div>
+                    <div class="label">美食分类</div>
+                </div>
+            </div>
+        </div>
+        <div class="scroll-indicator">↓</div>
+    </section>
+
+    <!-- 特色美食 -->
+    <section id="foods">
+        <div class="container">
+            <div class="section-title">
+                <div class="icon-title">🍽️</div>
+                <h2>南宁特色美食</h2>
+                <div class="divider"></div>
+                <p>精选南宁最具代表性的地道美食，每一道都承载着绿城的味道记忆</p>
+            </div>
+
+            <!-- 搜索框 -->
+            <div class="search-box">
+                <div class="search-input-wrapper">
+                    <input type="text" class="search-input" id="searchInput" placeholder="搜索美食名称...">
+                    <span class="search-icon">🔍</span>
+                </div>
+            </div>
+
+            <!-- 分类标签 -->
+            <div class="category-tabs" id="categoryTabs">
+                <button class="category-tab active" data-category="all">全部美食</button>
+                <button class="category-tab" data-category="米粉">🍜 米粉类</button>
+                <button class="category-tab" data-category="硬菜">🥘 硬菜大餐</button>
+                <button class="category-tab" data-category="小吃">🥟 小吃点心</button>
+                <button class="category-tab" data-category="甜品饮品">🍹 甜品饮品</button>
+                <button class="category-tab" data-category="酸嘢腌渍">🥒 酸嘢腌渍</button>
+            </div>
+
+            <!-- 美食列表 -->
+            <div class="food-grid" id="foodGrid"></div>
+        </div>
+    </section>
+
+    <!-- 美食路线 -->
+    <section class="route-section" id="routes">
+        <div class="container">
+            <div class="section-title">
+                <div class="icon-title">🗺️</div>
+                <h2>美食探索路线</h2>
+                <div class="divider"></div>
+                <p>精心规划的一日美食之旅，带你高效打卡南宁美味</p>
+            </div>
+            <div class="route-cards" id="routeCards"></div>
+        </div>
+    </section>
+
+    <!-- 美食文化 -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <div class="icon-title">📖</div>
+                <h2>南宁美食文化</h2>
+                <div class="divider"></div>
+                <p>深入了解南宁饮食文化的独特魅力</p>
+            </div>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">🌶️</div>
+                    <h3>酸辣鲜香</h3>
+                    <p>南宁菜以酸辣为主调，融合了壮族、瑶族等少数民族饮食特色，口味层次丰富，令人回味无穷。</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🍚</div>
+                    <h3>米粉之都</h3>
+                    <p>南宁人对米粉的热爱深入骨髓，老友粉、生榨粉、卷筒粉……一日三餐都离不开那一碗热气腾腾的米粉。</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🥒</div>
+                    <h3>酸嘢文化</h3>
+                    <p>"英雄难过美人关，美人难过酸嘢摊"。酸嘢是南宁街头最受欢迎的小吃，酸辣爽脆，开胃解腻。</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🏮</div>
+                    <h3>夜市烟火</h3>
+                    <p>中山路美食街、建政路夜市……南宁的夜生活从美食开始，烟火气中藏着最地道的市井味道。</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🍋</div>
+                    <h3>柠檬入菜</h3>
+                    <p>南宁人善用柠檬、酸梅等天然酸味食材入菜，柠檬鸭就是其中的经典代表，清香酸爽，别具一格。</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🌿</div>
+                    <h3>药食同源</h3>
+                    <p>受岭南饮食文化影响，南宁菜注重养生，凉茶、龟苓膏等药食同源的美食深受当地人喜爱。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p>🍜 寻味南宁 — 舌尖上的绿城美食指南</p>
+        <p>用美食感受南宁的城市温度 <span class="heart">❤️</span></p>
+        <p style="margin-top:10px;font-size:0.8rem;opacity:0.7;">南宁，一座让人来了就不想走的城市</p>
+    </footer>
+
+    <!-- 弹窗 -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modalContent"></div>
+    </div>
+
+    <!-- 回到顶部 -->
+    <button class="back-to-top" id="backToTop">↑</button>
+
+    <script>
+        // 美食数据
+        const foods = [{
+            id: 1,
+            name: '老友粉',
+            emoji: '🍜',
+            image: 'https://picsum.photos/seed/laoyoufen/400/300',
+            bgColor: '#fff5ee',
+            bgColorDark: '#f5d5c0',
+            category: '米粉',
+            tag: '南宁名片',
+            spiceLevel: 3,
+            priceRange: '¥10-20',
+            location: '舒记老友粉、复记老友粉',
+            rating: '⭐⭐⭐⭐⭐',
+            desc: '南宁最具代表性的美食，酸辣鲜香，汤底浓郁。以蒜末、豆豉、酸笋、辣椒爆炒后加汤煮粉，配以猪肉、猪肝等，香气扑鼻，开胃暖身。',
+            recommend: '舒记老友粉（七星路店）、复记老友粉（中山路）',
+            detail: '老友粉是南宁的标志性美食，起源可追溯到上世纪三十年代。据说是一位老友为生病的朋友特制的开胃粉，故得名"老友粉"。正宗的老友粉讲究"锅气"，豆豉、酸笋、蒜末、辣椒在热油中爆出香味，再加入高汤和米粉，最后放入鲜嫩的猪肉片和猪肝，一碗下肚，酸辣鲜香直冲头顶，是南宁人最爱的 Comfort Food。'
+        }, {
+            id: 2,
+            name: '生榨米粉',
+            emoji: '🍝',
+            image: 'https://picsum.photos/seed/shengzha/400/300',
+            bgColor: '#fef9e7',
+            bgColorDark: '#f0e0b0',
+            category: '米粉',
+            tag: '传统工艺',
+            spiceLevel: 2,
+            priceRange: '¥8-15',
+            location: '古源香生榨米粉、水街生榨米粉',
+            rating: '⭐⭐⭐⭐½',
+            desc: '用发酵后的米浆现榨成粉，口感软滑带微酸，配上肉末、花生、葱花，清淡鲜美，是南宁人早餐的最爱之一。',
+            recommend: '古源香生榨米粉（水街店）、天天生榨米粉（建政路）',
+            detail: '生榨米粉的独特之处在于其制作工艺——将大米浸泡发酵后磨成米浆，再通过特制的榨粉工具将米浆直接"榨"入沸水中煮熟。因为经过了发酵，米粉自带一种微酸的风味，口感比普通米粉更加软滑。吃时配上肉末、花生碎、葱花和特制酱油，朴实无华中透着精妙。'
+        }, {
+            id: 3,
+            name: '卷筒粉',
+            emoji: '🫔',
+            image: 'https://picsum.photos/seed/juantong/400/300',
+            bgColor: '#fffbf0',
+            bgColorDark: '#f5e6c0',
+            category: '米粉',
+            tag: '街边经典',
+            spiceLevel: 1,
+            priceRange: '¥5-12',
+            location: '中山路夜市、建政路夜市',
+            rating: '⭐⭐⭐⭐',
+            desc: '薄如蝉翼的粉皮包裹着肉末、木耳、豆角等馅料，淋上黄皮酱或酸甜酱，软嫩爽滑，是南宁街头随处可见的小吃。',
+            recommend: '中山路夜市各摊位、建政路夜市',
+            detail: '卷筒粉是南宁街头小吃的人气王。制作时将米浆均匀摊在蒸布上蒸熟，揭下后铺上炒好的馅料（常见的有肉末木耳、豆角肉末、韭菜鸡蛋等），卷成筒状，切成小段，再浇上南宁特色的黄皮酱或酸甜酱。粉皮薄而透亮，入口即化，馅料鲜香，酱汁开胃。'
+        }, {
+            id: 4,
+            name: '柠檬鸭',
+            emoji: '🍋',
+            image: 'https://picsum.photos/seed/ningmengya/400/300',
+            bgColor: '#f5f8e8',
+            bgColorDark: '#d8e8c0',
+            category: '硬菜',
+            tag: '招牌名菜',
+            spiceLevel: 3,
+            priceRange: '¥58-98',
+            location: '甘家界柠檬鸭、桂小厨',
+            rating: '⭐⭐⭐⭐⭐',
+            desc: '南宁名菜之首！鸭肉与酸柠檬、酸辣椒、酸姜等同炒，酸辣开胃，鸭肉紧实入味，是来到南宁必尝的硬菜。',
+            recommend: '甘家界柠檬鸭（总店）、桂小厨（万象城店）',
+            detail: '柠檬鸭是南宁最具代表性的菜肴，选用本地土鸭，配以腌制的酸柠檬、酸辣椒、酸姜、酸藠头等一同焖炒。酸柠檬的清香与鸭肉的鲜美完美融合，酸中带辣，辣中透鲜，鸭肉紧实不柴，越嚼越香。甘家界柠檬鸭是南宁最老字号的柠檬鸭品牌，已有数十年历史。'
+        }, {
+            id: 5,
+            name: '横县鱼生',
+            emoji: '🐟',
+            image: 'https://picsum.photos/seed/yusheng/400/300',
+            bgColor: '#eaf6ff',
+            bgColorDark: '#c8dff0',
+            category: '硬菜',
+            tag: '宴客佳品',
+            spiceLevel: 1,
+            priceRange: '¥68-128',
+            location: '横县鱼生馆、南宁各大酒楼',
+            rating: '⭐⭐⭐⭐⭐',
+            desc: '源自横县的招牌菜，新鲜河鱼片得极薄，晶莹剔透，配以姜丝、柠檬叶、花生等十几种配料，鲜美无比。',
+            recommend: '横县鱼生馆（东葛路）、桂味轩',
+            detail: '横县鱼生是南宁横州的传统名菜，有"横县鱼生，天下无双"的美誉。选用鲜活河鱼，现杀现片，鱼片薄可透光。吃时将鱼片与姜丝、柠檬叶丝、紫苏、花生、芝麻、酸藠头等十几种配料拌匀，再淋上特制的酱料，鱼肉鲜甜弹牙，配料丰富，层次分明。'
+        }, {
+            id: 6,
+            name: '南宁烧烤',
+            emoji: '🍢',
+            image: 'https://picsum.photos/seed/shaokao/400/300',
+            bgColor: '#fff3e0',
+            bgColorDark: '#f5d5b0',
+            category: '硬菜',
+            tag: '夜宵之王',
+            spiceLevel: 4,
+            priceRange: '¥30-80',
+            location: '中山路美食街、建政路夜市',
+            rating: '⭐⭐⭐⭐',
+            desc: '南宁夜生活的灵魂！从烤鱼到烤串，刷上特制酱料，撒上孜然辣椒，烟火气十足，配上一杯冰啤酒，完美。',
+            recommend: '中山路美食街、建政路夜市、农院路夜市',
+            detail: '南宁的烧烤文化源远流长，中山路美食街一到夜晚就变成了烧烤的天堂。南宁烧烤的特点是酱料浓郁，口味偏甜辣，烤鱼、烤生蚝、烤牛肉串、烤掌中宝都是人气之选。尤其是烤鱼，外焦里嫩，配以丰富的配菜，三五好友围坐一桌，是最地道的南宁夜生活体验。'
+        }, {
+            id: 7,
+            name: '粉饺',
+            emoji: '🥟',
+            image: 'https://picsum.photos/seed/fenjiao/400/300',
+            bgColor: '#fdf2f2',
+            bgColorDark: '#f0d0d0',
+            category: '小吃',
+            tag: '传统点心',
+            spiceLevel: 1,
+            priceRange: '¥8-15',
+            location: '水街、中山路',
+            rating: '⭐⭐⭐⭐',
+            desc: '用米粉做皮的饺子，皮薄馅大，馅料以猪肉、马蹄为主，口感Q弹清甜，蘸上黄皮酱食用风味更佳。',
+            recommend: '水街老牌粉饺、中山路美食街',
+            detail: '粉饺是南宁特有的传统点心，与普通饺子不同，其皮是用米粉制成的，因此蒸出来后晶莹剔透，口感弹牙。馅料通常为猪肉、马蹄（荸荠）、香菇等，马蹄的清脆与猪肉的鲜美相得益彰。吃粉饺一定要蘸南宁特色的黄皮酱，咸鲜中带着果香，让粉饺的风味更上一层楼。'
+        }, {
+            id: 8,
+            name: '五色糯米饭',
+            emoji: '🍚',
+            image: 'https://picsum.photos/seed/nuomi/400/300',
+            bgColor: '#f9f0ff',
+            bgColorDark: '#e0ccf0',
+            category: '小吃',
+            tag: '民族特色',
+            spiceLevel: 0,
+            priceRange: '¥10-20',
+            location: '水街、南宁各菜市场',
+            rating: '⭐⭐⭐⭐',
+            desc: '壮族传统美食，用天然植物汁液将糯米染成黑、红、黄、紫、白五色，色泽艳丽，寓意吉祥，清香软糯。',
+            recommend: '水街市场、三月三期间各民俗活动现场',
+            detail: '五色糯米饭是壮族"三月三"歌节的传统食品，也是南宁最具民族文化特色的美食。用枫叶汁染黑色、红蓝草染红色、黄姜染黄色、紫蕃藤染紫色，加上糯米的原色，形成了五彩缤纷的糯米饭。每种颜色都来自天然植物，不仅好看，还带有植物的清香，象征着五谷丰登、吉祥如意。'
+        }, {
+            id: 9,
+            name: '酸嘢',
+            emoji: '🥒',
+            image: 'https://picsum.photos/seed/suanye/400/300',
+            bgColor: '#f0fdf4',
+            bgColorDark: '#c8f0d8',
+            category: '酸嘢腌渍',
+            tag: '街头宠儿',
+            spiceLevel: 2,
+            priceRange: '¥5-15',
+            location: '南宁各大夜市、酸嘢摊',
+            rating: '⭐⭐⭐⭐⭐',
+            desc: '南宁街头随处可见的酸嘢摊，芒果、木瓜、萝卜、黄瓜等果蔬用酸醋、辣椒腌制，酸甜爽脆，开胃解暑。',
+            recommend: '建政路夜市酸嘢摊、中山路美食街',
+            detail: '"英雄难过美人关，美人难过酸嘢摊"——这句俗语形象地道出了南宁人对酸嘢的喜爱。酸嘢是用白醋、白糖、辣椒等将新鲜果蔬腌制而成的凉拌小吃，常见的有酸芒果、酸木瓜、酸萝卜、酸黄瓜、酸李子等。每一口都是酸甜脆爽的极致体验，在南宁闷热的天气里，来一份酸嘢是最惬意的享受。'
+        }, {
+            id: 10,
+            name: '凉茶',
+            emoji: '🍵',
+            image: 'https://picsum.photos/seed/liangcha/400/300',
+            bgColor: '#f5f0e8',
+            bgColorDark: '#d8cfc0',
+            category: '甜品饮品',
+            tag: '养生饮品',
+            spiceLevel: 0,
+            priceRange: '¥5-15',
+            location: '南宁各大凉茶铺',
+            rating: '⭐⭐⭐⭐',
+            desc: '岭南地区的传统饮品，由多种中草药熬制而成，清热祛湿，甘苦回甜。雷公根、王老吉、五花茶等都是经典选择。',
+            recommend: '双钱龟苓膏、街头凉茶铺',
+            detail: '南宁地处岭南，气候湿热，凉茶是当地人日常生活中不可或缺的饮品。不同于普通茶饮，凉茶由多种中草药精心熬制，每一家凉茶铺都有自己的独门秘方。雷公根凉茶清热解毒，五花茶祛湿降火，癍痧凉茶虽苦但效果显著。在南宁的小街小巷里，总有那么几家老字号凉茶铺，守护着这份传统的味道。'
+        }, {
+            id: 11,
+            name: '龟苓膏',
+            emoji: '🫙',
+            image: 'https://picsum.photos/seed/guilinggao/400/300',
+            bgColor: '#f5f0e8',
+            bgColorDark: '#d0c8b8',
+            category: '甜品饮品',
+            tag: '药膳甜品',
+            spiceLevel: 0,
+            priceRange: '¥8-20',
+            location: '双钱龟苓膏、南宁各甜品店',
+            rating: '⭐⭐⭐⭐½',
+            desc: '以龟板和土茯苓为主要原料熬制而成，口感滑嫩如果冻，微苦回甘，可加蜂蜜或炼奶调味，清热养颜。',
+            recommend: '双钱龟苓膏（万达店）、冰泉豆浆馆',
+            detail: '龟苓膏是南宁乃至整个广西最受欢迎的甜品之一。正宗龟苓膏用龟板、土茯苓、金银花等多种药材熬制，呈黑色半透明状，口感嫩滑。虽然原味微苦，但加蜂蜜、炼奶或椰汁后，苦中带甜，风味独特。在南宁闷热的夏天，一碗冰镇的龟苓膏是最佳的消暑圣品。'
+        }, {
+            id: 12,
+            name: '八宝饭',
+            emoji: '🍯',
+            image: 'https://picsum.photos/seed/babaofan/400/300',
+            bgColor: '#fef9f0',
+            bgColorDark: '#f0e0c0',
+            category: '甜品饮品',
+            tag: '传统甜点',
+            spiceLevel: 0,
+            priceRange: '¥12-25',
+            location: '水街、南宁各老字号甜品店',
+            rating: '⭐⭐⭐⭐',
+            desc: '糯米、豆沙、红枣、莲子等八种食材蒸制而成，软糯香甜，是南宁人节庆和宴席上必备的传统甜点。',
+            recommend: '水街老字号、南宁饭店中餐厅',
+            detail: '南宁八宝饭用料讲究，将糯米、红豆沙、红枣、莲子、桂圆、枸杞、核桃仁、葡萄干等八种食材层层铺叠，蒸制而成。成品色泽诱人，口感软糯香甜，每一口都能尝到不同食材的风味。在南宁，八宝饭不仅是日常甜品，更是春节、婚宴等重要场合必不可少的美食。'
+        }];
+
+        // 推荐路线
+        const routes = [{
+            id: 1,
+            title: '经典一日吃货游',
+            duration: '约8小时',
+            desc: '从早餐开始，全天打卡南宁最经典的美食。上午水街吃生榨米粉和粉饺，中午品尝柠檬鸭，下午来一碗老友粉，晚上逛中山路夜市吃烧烤和卷筒粉，最后以龟苓膏收尾。',
+            color: '#e74c3c'
+        }, {
+            id: 2,
+            title: '夜市深度探索',
+            duration: '约4小时（晚上）',
+            desc: '专为夜猫子设计！从建政路夜市出发，尝遍酸嘢、卷筒粉、烤鱼、烧烤，再到中山路美食街继续战斗，感受南宁最热闹的烟火气息。',
+            color: '#f39c12'
+        }, {
+            id: 3,
+            title: '老城区寻味之旅',
+            duration: '约6小时',
+            desc: '深入南宁老城区水街一带，探寻最地道的传统味道：五色糯米饭、粉饺、八宝饭、生榨米粉……在古老的骑楼间感受南宁的饮食历史。',
+            color: '#27ae60'
+        }];
+
+        // 渲染美食卡片
+        function renderFoods(filterCategory = 'all', searchQuery = '') {
+            const grid = document.getElementById('foodGrid');
+            let filtered = foods;
+
+            if (filterCategory !== 'all') {
+                filtered = filtered.filter(f => f.category === filterCategory);
+            }
+
+            if (searchQuery.trim()) {
+                const q = searchQuery.trim().toLowerCase();
+                filtered = filtered.filter(f =>
+                    f.name.toLowerCase().includes(q) ||
+                    f.desc.toLowerCase().includes(q) ||
+                    f.category.toLowerCase().includes(q)
+                );
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div class="no-result">😔 没有找到相关美食，试试其他关键词吧~</div>';
+                document.getElementById('countFood').textContent = foods.length + '+';
+                return;
+            }
+
+            document.getElementById('countFood').textContent = filtered.length + '+';
+
+            const spiceLabels = ['不辣', '微辣', '中辣', '较辣', '特辣'];
+
+            grid.innerHTML = filtered.map(food => `
+                <div class="food-card" onclick="openDetail(${food.id})" data-category="${food.category}">
+                    <div class="food-card-image" style="--card-from: ${food.bgColor}; --card-to: ${food.bgColorDark || food.bgColor};">
+                        <div class="food-dots"></div>
+                        <span class="food-emoji">${food.emoji}</span>
+                        <span class="food-card-tag">${food.tag}</span>
+                        <span class="food-name-overlay">${food.name}</span>
+                    </div>
+                    <div class="food-card-body">
+                        <h3>${food.name}</h3>
+                        <div class="food-card-meta">
+                            <span>🌶️ ${spiceLabels[food.spiceLevel]}</span>
+                            <span>💰 ${food.priceRange}</span>
+                        </div>
+                        <p class="desc">${food.desc}</p>
+                    </div>
+                    <div class="food-card-footer">
+                        <span class="food-card-location">📍 ${food.location}</span>
+                        <span class="food-card-rating">${food.rating}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 渲染路线
+        function renderRoutes() {
+            const container = document.getElementById('routeCards');
+            container.innerHTML = routes.map(route => `
+                <div class="route-card" style="border-left: 4px solid ${route.color};">
+                    <div class="route-number" style="color:${route.color};">0${route.id}</div>
+                    <div class="route-info">
+                        <h3>${route.title}</h3>
+                        <div class="route-duration">⏱️ ${route.duration}</div>
+                        <p>${route.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 弹窗详情
+        function openDetail(id) {
+            const food = foods.find(f => f.id === id);
+            if (!food) return;
+
+            const spiceLabels = ['不辣', '微辣', '中辣', '较辣', '特辣'];
+            const modal = document.getElementById('modalContent');
+            const overlay = document.getElementById('modalOverlay');
+
+            modal.innerHTML = `
+                <button class="modal-close" onclick="closeModal()">✕</button>
+                <div class="modal-hero-image" style="background:linear-gradient(135deg, ${food.bgColor} 0%, ${food.bgColorDark || food.bgColor} 100%);">
+                    <div class="modal-emoji-fallback" style="display:flex;align-items:center;justify-content:center;height:160px;font-size:5rem;border-radius:14px;">${food.emoji}</div>
+                </div>
+                <h2>${food.name}</h2>
+                <div class="modal-tags">
+                    <span class="modal-tag category">${food.category}</span>
+                    <span class="modal-tag level">🌶️ ${spiceLabels[food.spiceLevel]}</span>
+                    <span class="modal-tag price">💰 ${food.priceRange}</span>
+                </div>
+                <p class="modal-desc">${food.detail}</p>
+                <div class="modal-info">
+                    <h4>🍴 推荐去处</h4>
+                    <ul>
+                        ${food.recommend.split('、').map(r => `<li>${r.trim()}</li>`).join('')}
+                    </ul>
+                </div>
+                <div style="text-align:center;color:var(--gold);font-size:1.1rem;">${food.rating}</div>
+            `;
+
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // 分类切换
+        document.getElementById('categoryTabs').addEventListener('click', function(e) {
+            if (e.target.classList.contains('category-tab')) {
+                document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+                e.target.classList.add('active');
+                const category = e.target.dataset.category;
+                const searchQuery = document.getElementById('searchInput').value;
+                renderFoods(category, searchQuery);
+            }
+        });
+
+        // 搜索
+        document.getElementById('searchInput').addEventListener('input', function() {
+            const activeTab = document.querySelector('.category-tab.active');
+            const category = activeTab ? activeTab.dataset.category : 'all';
+            renderFoods(category, this.value);
+        });
+
+        // 弹窗关闭
+        document.getElementById('modalOverlay').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // 导航滚动效果
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            const backBtn = document.getElementById('backToTop');
+
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+                backBtn.classList.add('visible');
+            } else {
+                navbar.classList.remove('scrolled');
+                backBtn.classList.remove('visible');
+            }
+        });
+
+        // 回到顶部
+        document.getElementById('backToTop').addEventListener('click', function() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // 移动端菜单
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('navLinks').classList.toggle('active');
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                    document.getElementById('navLinks').classList.remove('active');
+                }
+            });
+        });
+
+        // 初始化
+        renderFoods();
+        renderRoutes();
+    </script>
+</body>
+</html>
