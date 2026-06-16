@@ -152,6 +152,33 @@
             margin-left: 10px;
         }
         .mode-toggle:hover { border-color: var(--primary); transform: scale(1.05); }
+        .user-btn { background: none; border: 2px solid var(--primary); font-size: .9rem; padding: 6px 16px; border-radius: 20px; cursor: pointer; transition: all 0.3s; margin-left: 6px; color: var(--primary); font-weight: 600; }
+        .user-btn:hover { background: var(--primary); color: #fff; }
+        .user-menu { position: relative; display: inline-block; }
+        .user-dropdown { display:none; position:absolute; top:100%; right:0; background:var(--card-bg); border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,.15); min-width:160px; z-index:100; margin-top:8px; overflow:hidden; }
+        .user-dropdown.show { display:block; }
+        .user-dropdown a { display:block; padding:10px 16px; font-size:.9rem; color:var(--text); cursor:pointer; transition:.2s; }
+        .user-dropdown a:hover { background:rgba(0,0,0,.05); }
+        .auth-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:2000; align-items:center; justify-content:center; }
+        .auth-overlay.active { display:flex; }
+        .auth-box { background:#fff; border-radius:20px; padding:36px 32px; width:90%; max-width:400px; box-shadow:0 20px 60px rgba(0,0,0,.3); position:relative; }
+        body.dark .auth-box { background:#1e293b; }
+        .auth-box h2 { font-size:1.5rem; margin-bottom:6px; text-align:center; }
+        .auth-box .sub { text-align:center; color:var(--text-light); font-size:.85rem; margin-bottom:20px; }
+        .auth-box .close-btn { position:absolute; top:12px; right:16px; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--text-light); }
+        .auth-box .close-btn:hover { color:var(--primary); }
+        .auth-box input { width:100%; padding:12px 14px; border:2px solid #e0d6c8; border-radius:10px; font-size:.95rem; margin-bottom:12px; outline:none; transition:.3s; font-family:inherit; }
+        body.dark .auth-box input { border-color:#475569; background:#334155; color:#e4e4e4; }
+        .auth-box input:focus { border-color:var(--primary); }
+        .auth-btn { width:100%; padding:12px; background:linear-gradient(135deg,var(--primary),#e67e22); color:#fff; border:none; border-radius:25px; font-size:1rem; font-weight:700; cursor:pointer; transition:.3s; }
+        .auth-btn:hover { transform:translateY(-1px); box-shadow:0 4px 15px rgba(231,76,60,.4); }
+        .auth-switch { text-align:center; margin-top:14px; font-size:.85rem; color:var(--text-light); }
+        .auth-switch a { color:var(--primary); cursor:pointer; font-weight:600; }
+        .auth-err { color:var(--primary); font-size:.8rem; text-align:center; margin:6px 0; display:none; }
+        .auth-tabs { display:flex; gap:0; margin-bottom:20px; border-radius:12px; overflow:hidden; border:2px solid #e0d6c8; }
+        body.dark .auth-tabs { border-color:#475569; }
+        .auth-tab { flex:1; padding:10px; text-align:center; font-size:.9rem; font-weight:600; cursor:pointer; background:transparent; border:none; transition:.3s; color:var(--text-light); }
+        .auth-tab.active { background:var(--primary); color:#fff; }
 
         /* 主视觉区 */
         .hero {
@@ -1100,6 +1127,15 @@
                 <span></span><span></span><span></span>
             </div>
             <button class="mode-toggle" id="modeToggle" title="切换深色模式">🌙</button>
+            <button class="user-btn" id="loginBtn" onclick="showAuth()">👤 登录</button>
+            <div class="user-menu" id="userMenu" style="display:none">
+                <button class="user-btn" id="userNameBtn" onclick="toggleUserMenu()">👤</button>
+                <div class="user-dropdown" id="userDropdown">
+                    <a onclick="showProfile()">📋 个人中心</a>
+                    <a onclick="showAdmin()" id="adminLink" style="display:none">⚙️ 管理后台</a>
+                    <a onclick="logout()">🚪 退出</a>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -1247,6 +1283,43 @@
     <!-- 弹窗 -->
     <div class="modal-overlay" id="modalOverlay">
         <div class="modal" id="modalContent"></div>
+    </div>
+
+    <!-- 登录/注册弹窗 -->
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-box">
+            <button class="close-btn" onclick="hideAuth()">✕</button>
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">登录</button>
+                <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">注册</button>
+            </div>
+            <div id="loginForm">
+                <h2>欢迎回来</h2>
+                <p class="sub">登录你的美食账户</p>
+                <input type="text" id="loginUsername" placeholder="用户名">
+                <input type="password" id="loginPassword" placeholder="密码">
+                <div class="auth-err" id="loginError"></div>
+                <button class="auth-btn" onclick="handleLogin()">登 录</button>
+            </div>
+            <div id="registerForm" style="display:none">
+                <h2>创建账户</h2>
+                <p class="sub">加入南宁美食探索之旅</p>
+                <input type="text" id="regUsername" placeholder="用户名（3-20个字符）">
+                <input type="password" id="regPassword" placeholder="密码（至少6位）">
+                <input type="password" id="regPasswordConfirm" placeholder="确认密码">
+                <div class="auth-err" id="regError"></div>
+                <button class="auth-btn" onclick="handleRegister()">注 册</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 个人中心弹窗 -->
+    <div class="auth-overlay" id="profileOverlay">
+        <div class="auth-box">
+            <button class="close-btn" onclick="hideProfile()">✕</button>
+            <h2>📋 个人中心</h2>
+            <div id="profileContent"></div>
+        </div>
     </div>
 
     <!-- 回到顶部 -->
@@ -1851,6 +1924,236 @@
             const isDark = document.body.classList.toggle('dark');
             modeToggle.textContent = isDark ? '☀️' : '🌙';
             localStorage.setItem('nnDarkMode', isDark);
+        });
+
+        // ========== 登录系统 ==========
+        function getUsers() {
+            let users = JSON.parse(localStorage.getItem('nnUsers') || '[]');
+            if (users.length === 0 || !users.find(u => u.isAdmin)) {
+                users.push({ username: 'admin', password: 'admin123', isAdmin: true });
+                localStorage.setItem('nnUsers', JSON.stringify(users));
+            }
+            return users;
+        }
+
+        function getCurrentUser() {
+            return JSON.parse(localStorage.getItem('nnCurrentUser') || 'null');
+        }
+
+        function showAuth() {
+            document.getElementById('authOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            switchAuthTab('login');
+        }
+
+        function hideAuth() {
+            document.getElementById('authOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('regUsername').value = '';
+            document.getElementById('regPassword').value = '';
+            document.getElementById('regPasswordConfirm').value = '';
+            document.getElementById('loginError').style.display = 'none';
+            document.getElementById('regError').style.display = 'none';
+        }
+
+        function switchAuthTab(tab) {
+            document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+            document.getElementById('tabRegister').classList.toggle('active', tab === 'register');
+            document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+            document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+            document.getElementById('loginError').style.display = 'none';
+            document.getElementById('regError').style.display = 'none';
+        }
+
+        function handleLogin() {
+            var username = document.getElementById('loginUsername').value.trim();
+            var password = document.getElementById('loginPassword').value;
+            var errEl = document.getElementById('loginError');
+            if (!username || !password) {
+                errEl.textContent = '请输入用户名和密码';
+                errEl.style.display = 'block';
+                return;
+            }
+            var users = getUsers();
+            var user = users.find(function(u) { return u.username === username && u.password === password; });
+            if (!user) {
+                errEl.textContent = '用户名或密码错误';
+                errEl.style.display = 'block';
+                return;
+            }
+            localStorage.setItem('nnCurrentUser', JSON.stringify({ username: user.username, isAdmin: user.isAdmin }));
+            hideAuth();
+            updateUserUI();
+        }
+
+        function handleRegister() {
+            var username = document.getElementById('regUsername').value.trim();
+            var password = document.getElementById('regPassword').value;
+            var passwordConfirm = document.getElementById('regPasswordConfirm').value;
+            var errEl = document.getElementById('regError');
+            if (!username || !password) {
+                errEl.textContent = '请输入用户名和密码';
+                errEl.style.display = 'block';
+                return;
+            }
+            if (username.length < 3 || username.length > 20) {
+                errEl.textContent = '用户名长度需在3-20个字符之间';
+                errEl.style.display = 'block';
+                return;
+            }
+            if (password.length < 6) {
+                errEl.textContent = '密码长度至少6位';
+                errEl.style.display = 'block';
+                return;
+            }
+            if (password !== passwordConfirm) {
+                errEl.textContent = '两次密码输入不一致';
+                errEl.style.display = 'block';
+                return;
+            }
+            var users = getUsers();
+            if (users.find(function(u) { return u.username === username; })) {
+                errEl.textContent = '该用户名已被注册';
+                errEl.style.display = 'block';
+                return;
+            }
+            users.push({ username: username, password: password, isAdmin: false });
+            localStorage.setItem('nnUsers', JSON.stringify(users));
+            localStorage.setItem('nnCurrentUser', JSON.stringify({ username: username, isAdmin: false }));
+            hideAuth();
+            updateUserUI();
+        }
+
+        function updateUserUI() {
+            var user = getCurrentUser();
+            var loginBtn = document.getElementById('loginBtn');
+            var userMenu = document.getElementById('userMenu');
+            var userNameBtn = document.getElementById('userNameBtn');
+            var adminLink = document.getElementById('adminLink');
+            if (user) {
+                loginBtn.style.display = 'none';
+                userMenu.style.display = 'inline-block';
+                userNameBtn.textContent = '👤 ' + user.username;
+                adminLink.style.display = user.isAdmin ? 'block' : 'none';
+            } else {
+                loginBtn.style.display = 'inline-block';
+                userMenu.style.display = 'none';
+                adminLink.style.display = 'none';
+            }
+        }
+
+        function toggleUserMenu() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        function logout() {
+            localStorage.removeItem('nnCurrentUser');
+            updateUserUI();
+            renderFoods(currentCategory, currentSearch);
+        }
+
+        function showProfile() {
+            var user = getCurrentUser();
+            if (!user) return;
+            document.getElementById('userDropdown').classList.remove('show');
+            var favorites = JSON.parse(localStorage.getItem('nnFavorites') || '[]');
+            var eatenList = JSON.parse(localStorage.getItem('nnEaten') || '[]');
+            var favFoods = foods.filter(function(f) { return favorites.includes(f.id); });
+            var eatenFoods = foods.filter(function(f) { return eatenList.includes(f.id); });
+            var html = '<p style="text-align:center;font-size:1.1rem;margin-bottom:10px;">👤 <strong>' + user.username + '</strong>' + (user.isAdmin ? ' <span style="color:var(--primary);font-size:.8rem;">[管理员]</span>' : '') + '</p>';
+            html += '<div style="display:flex;gap:12px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;">';
+            html += '<div style="text-align:center;padding:12px 20px;background:var(--bg);border-radius:12px;"><div style="font-size:1.8rem;">❤️</div><div style="font-weight:700;font-size:1.2rem;">' + favorites.length + '</div><div style="font-size:.8rem;color:var(--text-light);">收藏美食</div></div>';
+            html += '<div style="text-align:center;padding:12px 20px;background:var(--bg);border-radius:12px;"><div style="font-size:1.8rem;">✅</div><div style="font-weight:700;font-size:1.2rem;">' + eatenList.length + '</div><div style="font-size:.8rem;color:var(--text-light);">已打卡</div></div>';
+            html += '</div>';
+            if (favFoods.length > 0) {
+                html += '<div style="margin-bottom:12px;"><strong>❤️ 我的收藏：</strong><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">';
+                favFoods.forEach(function(f) {
+                    html += '<span style="background:var(--bg);padding:4px 10px;border-radius:15px;font-size:.85rem;cursor:pointer;" onclick="hideProfile();openDetail(' + f.id + ')">' + f.emoji + ' ' + f.name + '</span>';
+                });
+                html += '</div></div>';
+            } else {
+                html += '<p style="color:var(--text-light);text-align:center;">还没有收藏美食~</p>';
+            }
+            if (eatenFoods.length > 0) {
+                html += '<div><strong>✅ 已打卡：</strong><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">';
+                eatenFoods.forEach(function(f) {
+                    html += '<span style="background:var(--bg);padding:4px 10px;border-radius:15px;font-size:.85rem;">' + f.emoji + ' ' + f.name + '</span>';
+                });
+                html += '</div></div>';
+            } else {
+                html += '<p style="color:var(--text-light);text-align:center;">还没有打卡记录~</p>';
+            }
+            html += '<button class="auth-btn" style="margin-top:20px;" onclick="logout();hideProfile();">🚪 退出登录</button>';
+            document.getElementById('profileContent').innerHTML = html;
+            document.getElementById('profileOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function hideProfile() {
+            document.getElementById('profileOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function showAdmin() {
+            var user = getCurrentUser();
+            if (!user || !user.isAdmin) return;
+            document.getElementById('userDropdown').classList.remove('show');
+            var users = getUsers();
+            var html = '<h2 style="text-align:center;">⚙️ 管理后台</h2>';
+            html += '<p style="text-align:center;color:var(--text-light);font-size:.85rem;">管理员：' + user.username + '</p>';
+            html += '<div style="margin:16px 0;"><strong>👥 用户列表 (' + users.length + '人)：</strong>';
+            html += '<div style="max-height:200px;overflow-y:auto;margin-top:8px;">';
+            users.forEach(function(u) {
+                html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--bg);border-radius:8px;margin-bottom:6px;">';
+                html += '<span>' + u.username + ' ' + (u.isAdmin ? '👑' : '👤') + '</span>';
+                if (!u.isAdmin) {
+                    html += '<button style="background:var(--primary);color:#fff;border:none;padding:4px 12px;border-radius:12px;cursor:pointer;font-size:.8rem;" onclick="deleteUser(\'' + u.username + '\')">删除</button>';
+                } else {
+                    html += '<span style="font-size:.8rem;color:var(--text-light);">管理员</span>';
+                }
+                html += '</div>';
+            });
+            html += '</div></div>';
+            document.getElementById('profileContent').innerHTML = html;
+            document.getElementById('profileOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function deleteUser(username) {
+            if (!confirm('确定要删除用户"' + username + '"吗？')) return;
+            var users = getUsers();
+            users = users.filter(function(u) { return u.username !== username; });
+            localStorage.setItem('nnUsers', JSON.stringify(users));
+            showAdmin();
+        }
+
+        // 页面加载时检查登录状态
+        updateUserUI();
+
+        // 点击遮罩关闭弹窗
+        document.getElementById('authOverlay').addEventListener('click', function(e) {
+            if (e.target === this) hideAuth();
+        });
+        document.getElementById('profileOverlay').addEventListener('click', function(e) {
+            if (e.target === this) hideProfile();
+        });
+
+        // 点击空白关闭用户下拉菜单
+        document.addEventListener('click', function(e) {
+            var menu = document.getElementById('userMenu');
+            if (menu && !menu.contains(e.target)) {
+                document.getElementById('userDropdown').classList.remove('show');
+            }
+        });
+
+        // 回车键登录
+        document.getElementById('loginPassword').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') handleLogin();
+        });
+        document.getElementById('regPasswordConfirm').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') handleRegister();
         });
 
         // 初始化
