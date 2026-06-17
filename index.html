@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -1108,6 +1108,36 @@
                 font-size: 1.7rem;
             }
         }
+    /* 评论区 */
+        .comments-section { padding: 80px 0; background: var(--card-bg); }
+        .comments-container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+        .comments-title { font-size: 2rem; font-weight: 700; margin-bottom: 30px; text-align: center; color: var(--text); }
+        .comments-title .count { color: var(--primary); font-size: 1.5rem; }
+        .comment-input-box { background: var(--bg); border-radius: 16px; padding: 24px; margin-bottom: 30px; border: 2px solid #e0d6c8; }
+        body.dark .comment-input-box { border-color: #475569; }
+        .comment-input-box h3 { font-size: 1.2rem; margin-bottom: 12px; color: var(--text); }
+        .comment-textarea { width: 100%; min-height: 100px; padding: 14px; border: 2px solid #e0d6c8; border-radius: 10px; background: var(--card-bg); color: var(--text); font-family: inherit; font-size: 1rem; resize: vertical; outline: none; transition: .3s; box-sizing: border-box; }
+        body.dark .comment-textarea { border-color: #475569; background: var(--card-bg); }
+        .comment-textarea:focus { border-color: var(--primary); }
+        .comment-btn-row { display: flex; justify-content: flex-end; margin-top: 12px; }
+        .comment-submit { padding: 10px 28px; background: linear-gradient(135deg, var(--primary), #e67e22); color: #fff; border: none; border-radius: 25px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: .3s; }
+        .comment-submit:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(231,76,60,.4); }
+        .comment-login-hint { text-align: center; padding: 20px; color: var(--text-light); background: var(--bg); border-radius: 12px; margin-bottom: 20px; border: 1px dashed var(--primary); }
+        .comment-login-hint span { color: var(--primary); font-weight: 600; cursor: pointer; text-decoration: underline; }
+        .comment-login-hint span:hover { color: #e67e22; }
+        .comment-list { display: flex; flex-direction: column; gap: 16px; }
+        .comment-item { background: var(--bg); border-radius: 12px; padding: 18px 22px; border-left: 4px solid var(--primary); transition: .3s; }
+        .comment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .comment-user { display: flex; align-items: center; gap: 8px; }
+        .comment-avatar { width: 36px; height: 36px; background: linear-gradient(135deg, var(--primary), #e67e22); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 1.2rem; flex-shrink: 0; }
+        .comment-username { font-weight: 700; color: var(--text); font-size: 1rem; }
+        .comment-admin { display: inline-block; background: var(--primary); color: #fff; font-size: .7rem; padding: 2px 6px; border-radius: 6px; margin-left: 4px; }
+        .comment-time { font-size: .8rem; color: var(--text-light); }
+        .comment-content { color: var(--text); line-height: 1.7; font-size: .95rem; word-break: break-word; }
+        .comment-delete { background: none; border: none; color: var(--primary); font-size: .85rem; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: .2s; }
+        .comment-delete:hover { background: var(--primary); color: #fff; }
+        .comment-empty { text-align: center; padding: 40px 20px; color: var(--text-light); background: var(--bg); border-radius: 12px; }
+        .comment-empty .icon { font-size: 3rem; margin-bottom: 10px; opacity: .5; }
     </style>
 </head>
 <body>
@@ -1270,6 +1300,26 @@
                     <p>受岭南饮食文化影响，南宁菜注重养生，凉茶、龟苓膏等药食同源的美食深受当地人喜爱。</p>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- 美食打卡评论区 -->
+    <section class="comments-section" id="comments">
+        <div class="comments-container">
+            <div class="comments-title">
+                💬 美食打卡评论 <span class="count" id="commentCount">0</span> 条
+            </div>
+            <div id="commentLoginHint" class="comment-login-hint">
+                🔒 请先 <span onclick="showAuth()">登录</span> 后发表评论
+            </div>
+            <div id="commentInputBox" class="comment-input-box" style="display:none;">
+                <h3>📝 发表你的美食评论</h3>
+                <textarea class="comment-textarea" id="commentTextarea" placeholder="分享你的南宁美食体验吧~"></textarea>
+                <div class="comment-btn-row">
+                    <button class="comment-submit" onclick="submitComment()">💬 发表评论</button>
+                </div>
+            </div>
+            <div class="comment-list" id="commentList"></div>
         </div>
     </section>
 
@@ -2042,6 +2092,8 @@
                 userMenu.style.display = 'none';
                 adminLink.style.display = 'none';
             }
+            updateCommentUI();
+            renderComments();
         }
 
         function toggleUserMenu() {
@@ -2156,9 +2208,93 @@
             if (e.key === 'Enter') handleRegister();
         });
 
+        // ========== 评论区功能 ==========
+        function getComments() {
+            try { return JSON.parse(localStorage.getItem('nnComments') || '[]'); } catch(e) { return []; }
+        }
+        function saveComments(comments) {
+            localStorage.setItem('nnComments', JSON.stringify(comments));
+        }
+        function submitComment() {
+            var user = getCurrentUser();
+            if (!user) { showAuth(); return; }
+            var textarea = document.getElementById('commentTextarea');
+            var content = textarea.value.trim();
+            if (!content) { alert('请输入评论内容'); return; }
+            if (content.length > 500) { alert('评论内容不能超过500字'); return; }
+            var comments = getComments();
+            comments.unshift({
+                id: Date.now(),
+                username: user.username,
+                isAdmin: user.isAdmin,
+                content: content,
+                time: new Date().toLocaleString('zh-CN')
+            });
+            saveComments(comments);
+            textarea.value = '';
+            renderComments();
+        }
+        function deleteComment(commentId) {
+            var user = getCurrentUser();
+            if (!user) return;
+            var comments = getComments();
+            var comment = comments.find(function(c) { return c.id === commentId; });
+            if (!comment) return;
+            if (!user.isAdmin && comment.username !== user.username) {
+                alert('只能删除自己的评论'); return;
+            }
+            if (!confirm('确定要删除这条评论吗？')) return;
+            comments = comments.filter(function(c) { return c.id !== commentId; });
+            saveComments(comments);
+            renderComments();
+        }
+        function renderComments() {
+            var comments = getComments();
+            var list = document.getElementById('commentList');
+            var count = document.getElementById('commentCount');
+            count.textContent = comments.length;
+            if (comments.length === 0) {
+                list.innerHTML = '<div class="comment-empty"><div class="icon">💬</div><p>还没有评论，快来抢沙发吧~</p></div>';
+                return;
+            }
+            var user = getCurrentUser();
+            list.innerHTML = comments.map(function(c) {
+                var canDelete = user && (user.isAdmin || user.username === c.username);
+                var avatar = c.username.charAt(0).toUpperCase();
+                var adminBadge = c.isAdmin ? '<span class="comment-admin">管理员</span>' : '';
+                var deleteBtn = canDelete ? '<button class="comment-delete" onclick="deleteComment(' + c.id + ')">🗑 删除</button>' : '';
+                var safeContent = c.content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+                return '<div class="comment-item">' +
+                    '<div class="comment-header">' +
+                        '<div class="comment-user">' +
+                            '<div class="comment-avatar">' + avatar + '</div>' +
+                            '<span class="comment-username">' + c.username + '</span>' +
+                            adminBadge +
+                        '</div>' +
+                        '<div class="comment-time">' + c.time + '</div>' +
+                    '</div>' +
+                    '<div class="comment-content">' + safeContent + '</div>' +
+                    (deleteBtn ? '<div style="text-align:right;margin-top:8px;">' + deleteBtn + '</div>' : '') +
+                '</div>';
+            }).join('');
+        }
+        function updateCommentUI() {
+            var user = getCurrentUser();
+            var inputBox = document.getElementById('commentInputBox');
+            var loginHint = document.getElementById('commentLoginHint');
+            if (user) {
+                inputBox.style.display = 'block';
+                loginHint.style.display = 'none';
+            } else {
+                inputBox.style.display = 'none';
+                loginHint.style.display = 'block';
+            }
+        }
+
         // 初始化
         renderFoods();
         renderRoutes();
+        renderComments();
     </script>
 </body>
 </html>
