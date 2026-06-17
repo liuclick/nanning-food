@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https:; img-src 'self' https: data:; font-src 'self' https: data:; connect-src 'self' https:; frame-ancestors 'self';">
+    <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
     <title>南宁美食推荐 | 舌尖上的绿城</title>
     <style>
         * {
@@ -1376,6 +1378,35 @@
     <button class="back-to-top" id="backToTop">↑</button>
 
     <script>
+        // ========== 安全防护层 ==========
+        (function(){
+            // 1. 防点击劫持（frame-busting）
+            if (window.top !== window.self) {
+                window.top.location = window.self.location;
+            }
+            // 2. 控制台警告（防社工攻击）
+            console.log('%c⚠️ 安全警告','color:red;font-size:30px;');
+            console.log('%c请不要在此处粘贴任何代码，可能导致账号被盗！','color:#333;font-size:16px;');
+            // 3. localStorage数据校验（防注入）
+            function sanitizeStorage(key, fallback) {
+                try {
+                    var data = JSON.parse(localStorage.getItem(key));
+                    if (!data) return fallback;
+                    return data;
+                } catch(e) {
+                    localStorage.removeItem(key);
+                    return fallback;
+                }
+            }
+            // 4. 评论数量上限（防DoS）
+            var MAX_COMMENTS = 500;
+            window._SAFE = {
+                sanitizeStorage: sanitizeStorage,
+                MAX_COMMENTS: MAX_COMMENTS
+            };
+        })();
+        // ========== 安全防护层结束 ==========
+
         // 美食数据
         const foods = [{
             id: 1,
@@ -2222,14 +2253,37 @@
             var content = textarea.value.trim();
             if (!content) { alert('请输入评论内容'); return; }
             if (content.length > 500) { alert('评论内容不能超过500字'); return; }
+            // 频率限制：同一用户30秒内只能发一条
+            var now = Date.now();
+            var lastTime = parseInt(localStorage.getItem('nnLastComment_' + user.username) || '0');
+            if (now - lastTime < 30000) {
+                var remain = Math.ceil((30000 - (now - lastTime)) / 1000);
+                alert('请勿频繁评论，' + remain + '秒后再试');
+                return;
+            }
+            // 数量上限：防止localStorage被撑爆
             var comments = getComments();
+            if (comments.length >= window._SAFE.MAX_COMMENTS) {
+                alert('评论已达上限，请联系管理员清理');
+                return;
+            }
+            // 敏感词过滤
+            var blocked = ['fuck','shit','傻逼','妈的','操你','你妈','死全家','sb','cnm','nmsl','草泥马'];
+            var lowerContent = content.toLowerCase();
+            for (var i = 0; i < blocked.length; i++) {
+                if (lowerContent.indexOf(blocked[i]) !== -1) {
+                    alert('评论包含不当内容，请修改后重试');
+                    return;
+                }
+            }
             comments.unshift({
                 id: Date.now(),
-                username: user.username,
+                username: user.username.replace(/[<>"'&]/g,''),
                 isAdmin: user.isAdmin,
                 content: content,
                 time: new Date().toLocaleString('zh-CN')
             });
+            localStorage.setItem('nnLastComment_' + user.username, now);
             saveComments(comments);
             textarea.value = '';
             renderComments();
@@ -2261,6 +2315,7 @@
             list.innerHTML = comments.map(function(c) {
                 var canDelete = user && (user.isAdmin || user.username === c.username);
                 var avatar = c.username.charAt(0).toUpperCase();
+                var displayName = c.username.length > 20 ? c.username.substring(0,20) + '…' : c.username;
                 var adminBadge = c.isAdmin ? '<span class="comment-admin">管理员</span>' : '';
                 var deleteBtn = canDelete ? '<button class="comment-delete" onclick="deleteComment(' + c.id + ')">🗑 删除</button>' : '';
                 var safeContent = c.content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -2268,7 +2323,7 @@
                     '<div class="comment-header">' +
                         '<div class="comment-user">' +
                             '<div class="comment-avatar">' + avatar + '</div>' +
-                            '<span class="comment-username">' + c.username + '</span>' +
+                            '<span class="comment-username">' + displayName + '</span>' +
                             adminBadge +
                         '</div>' +
                         '<div class="comment-time">' + c.time + '</div>' +
@@ -2290,6 +2345,25 @@
                 loginHint.style.display = 'block';
             }
         }
+
+        // 安全清理：启动时检查并清理
+        (function securityCleanup(){
+            // 清理过期评论（超过1000条砍到500条）
+            var comments = getComments();
+            if (comments.length > window._SAFE.MAX_COMMENTS) {
+                comments = comments.slice(0, window._SAFE.MAX_COMMENTS);
+                saveComments(comments);
+            }
+            // 清理7天前的频率限制记录
+            var weekAgo = Date.now() - 7*24*60*60*1000;
+            var keys = Object.keys(localStorage);
+            for (var i = 0; i < keys.length; i++) {
+                if (keys[i].indexOf('nnLastComment_') === 0) {
+                    var t = parseInt(localStorage.getItem(keys[i]));
+                    if (t < weekAgo) localStorage.removeItem(keys[i]);
+                }
+            }
+        })();
 
         // 初始化
         renderFoods();
